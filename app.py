@@ -98,10 +98,28 @@ for col in cols_numericas:
 
 df['incendio_consumo_agua'] = df['incendio_consumo_agua'].fillna(0)
 
-# Barra de filtros horizontal
-st.markdown('<div class="filter-bar">', unsafe_allow_html=True)
+# Filtro compacto e simples
+st.markdown(
+    """
+    <style>
+    .simple-filter .stMultiSelect {
+        min-width: 220px !important;
+        max-width: 320px !important;
+        margin: 0 auto;
+    }
+    .simple-filter label {font-size: 1rem; color: #1565c0; font-weight: 600;}
+    .stMultiSelect [data-baseweb="tag"] {
+        background: #1976d2 !important;
+        color: #fff !important;
+        border-radius: 6px;
+        font-weight: 500;
+    }
+    .stMultiSelect [data-baseweb="tag"] svg {color: #fff !important;}
+    </style>
+    ", unsafe_allow_html=True)
+st.markdown('<div class="simple-filter">', unsafe_allow_html=True)
 bairros = df['bairro'].dropna().unique()
-bairro_sel = st.multiselect("Filtrar por bairro:", bairros, default=bairros, key="filtros_bairros")
+bairro_sel = st.multiselect("Bairros:", bairros, default=bairros, key="filtros_bairros")
 st.markdown('</div>', unsafe_allow_html=True)
 df_filtrado = df[df['bairro'].isin(bairro_sel)]
 
