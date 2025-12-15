@@ -65,6 +65,12 @@ O arquivo `dados_soro.csv` contém os registros das ocorrências, com campos com
 
 ---
 
+
+## Créditos
+Desenvolvido por alunos da turma de TADS 044:
+
+**Arthur Silveira, Maíra Lourenço, Manoel Olímpio, Matheus Willian, Victor Gomes e Victoria Zambom**
+
 Projeto acadêmico para fins de estudo e demonstração de técnicas de análise de dados aplicadas à segurança pública.
 
 ---

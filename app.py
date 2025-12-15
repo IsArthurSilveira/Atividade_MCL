@@ -1,3 +1,11 @@
+# Rodapé com créditos
+st.markdown("""
+<hr style='margin-top:2.5rem;margin-bottom:0.5rem;'>
+<div style='text-align:center; color:#1565c0; font-size:1.1rem;'>
+Desenvolvido por alunos da turma de TADS 044:<br>
+<b>Arthur Silveira, Maíra Lourenço, Manoel Olímpio, Matheus Willian, Victor Gomes e Victoria Zambom</b>
+</div>
+""", unsafe_allow_html=True)
 import streamlit as st
 import pandas as pd
 import plotly.express as px
