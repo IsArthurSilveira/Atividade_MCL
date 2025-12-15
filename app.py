@@ -78,69 +78,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-@st.cache_data
-def load_data():
-    try:
-        df = pd.read_csv("dados_soro.csv")
-        if 'data_hora' in df.columns:
-            df['data_hora'] = pd.to_datetime(df['data_hora'])
-        return df
-    except Exception as e:
-        st.error(f"Erro ao ler CSV: {e}")
-        return pd.DataFrame()
-
-df = load_data()
-
-df['data_hora'] = pd.to_datetime(df['data_hora'], errors='coerce')
-cols_numericas = ['latitude', 'longitude', 'tempo_resposta', 'qtd_total_vitimas', 'incendio_consumo_agua']
-for col in cols_numericas:
-    df[col] = pd.to_numeric(df[col], errors='coerce')
-
-df['incendio_consumo_agua'] = df['incendio_consumo_agua'].fillna(0)
-
-# Filtro compacto e simples
-st.markdown(
-    """
-    <style>
-    .simple-filter .stMultiSelect {
-        min-width: 220px !important;
-        max-width: 320px !important;
-        margin: 0 auto;
-    }
-    .simple-filter label {font-size: 1rem; color: #1565c0; font-weight: 600;}
-    .stMultiSelect [data-baseweb="tag"] {
-        background: #1976d2 !important;
-        color: #fff !important;
-        border-radius: 6px;
-        font-weight: 500;
-    }
-    .stMultiSelect [data-baseweb="tag"] svg {color: #fff !important;}
-    </style>
-    ", unsafe_allow_html=True)
-st.markdown('<div class="simple-filter">', unsafe_allow_html=True)
-bairros = df['bairro'].dropna().unique()
-bairro_sel = st.multiselect("Bairros:", bairros, default=bairros, key="filtros_bairros")
-st.markdown('</div>', unsafe_allow_html=True)
-df_filtrado = df[df['bairro'].isin(bairro_sel)]
-
-
-# Header customizado
-st.markdown('<div class="header-soro"><h1>S.O.R.O. - Sistema Organizacional para Registros de Ocorrencias</h1></div>', unsafe_allow_html=True)
-
-
-# KPIs em cards
-k1, k2, k3, k4 = st.columns(4)
-with k1:
-    st.markdown('<div class="kpi-card"><div class="kpi-label">Total de Ocorrências</div><div class="kpi-value">{}</div></div>'.format(len(df_filtrado)), unsafe_allow_html=True)
-with k2:
-    st.markdown('<div class="kpi-card"><div class="kpi-label">Vítimas Registradas</div><div class="kpi-value">{}</div></div>'.format(int(df_filtrado["qtd_total_vitimas"].sum())), unsafe_allow_html=True)
-with k3:
-    st.markdown('<div class="kpi-card"><div class="kpi-label">Tempo Médio Resposta</div><div class="kpi-value">{:.1f} min</div></div>'.format(df_filtrado['tempo_resposta'].mean()), unsafe_allow_html=True)
-with k4:
-    st.markdown('<div class="kpi-card"><div class="kpi-label">Consumo Água (Incêndio)</div><div class="kpi-value">{:,.0f} L</div></div>'.format(df_filtrado['incendio_consumo_agua'].sum()), unsafe_allow_html=True)
-
-st.divider()
-
 
 aba1, aba2, aba3, aba4 = st.tabs(["Visão Geral", "Incêndios", "Data Science & ML", "Salvamento & Praias"])
 
