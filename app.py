@@ -5,89 +5,47 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import LabelEncoder
 
-# Carregamento dos dados
-df = pd.read_csv("dados_soro.csv")
-
-
 st.set_page_config(
     page_title="S.O.R.O. - Sistema Organizacional para Registros de Ocorrencias",
     page_icon=None,
     layout="wide"
 )
 
-# Estilo customizado para visual moderno
-st.markdown(
-    """
-    <style>
-    body, .stApp, .main, .block-container {
-        background: linear-gradient(120deg, #e3f2fd 0%, #fff 100%) !important;
-    }
-    .header-soro {
-        background: #1565c0;
-        color: #fff;
-        padding: 2rem 1rem 1.5rem 1rem;
-        border-radius: 18px;
-        margin-bottom: 2rem;
-        box-shadow: 0 4px 24px #1565c033;
-        text-align: center;
-    }
-    .kpi-card {
-        background: #fff;
-        border-radius: 12px;
-        box-shadow: 0 2px 12px #1565c022;
-        padding: 1.2rem 1rem 0.8rem 1rem;
-        margin-bottom: 1.2rem;
-        text-align: center;
-        border: 2px solid #e3f2fd;
-    }
-    .kpi-label {
-        color: #1976d2;
-        font-weight: 600;
-        font-size: 1.1rem;
-    }
-    .kpi-value {
-        color: #0d47a1;
-        font-size: 2.1rem;
-        font-weight: bold;
-    }
-    .filter-bar {
-        background: #fff;
-        border-radius: 10px;
-        box-shadow: 0 2px 8px #1565c022;
-        padding: 0.7rem 1rem 0.7rem 1rem;
-        margin-bottom: 1.5rem;
-        border: 1.5px solid #bbdefb;
-    }
-    .stTabs [data-baseweb="tab"] {
-        background: #e3f2fd !important;
-        color: #1565c0 !important;
-        font-weight: 600;
-        border-radius: 8px 8px 0 0;
-        margin-right: 2px;
-    }
-    .stTabs [aria-selected="true"] {
-        background: #1565c0 !important;
-        color: #fff !important;
-    }
-    .card-graph {
-        background: #fff;
-        border-radius: 14px;
-        box-shadow: 0 2px 16px #1565c022;
-        padding: 1.2rem 1rem 1.2rem 1rem;
-        margin-bottom: 1.5rem;
-        border: 1.5px solid #e3f2fd;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+@st.cache_data
+def load_data():
+    try:
+        df = pd.read_csv("dados_soro.csv")
+        if 'data_hora' in df.columns:
+            df['data_hora'] = pd.to_datetime(df['data_hora'])
+        return df
+    except Exception as e:
+        st.error(f"Erro ao ler CSV: {e}")
+        return pd.DataFrame()
 
+df = load_data()
 
+df['data_hora'] = pd.to_datetime(df['data_hora'], errors='coerce')
+cols_numericas = ['latitude', 'longitude', 'tempo_resposta', 'qtd_total_vitimas', 'incendio_consumo_agua']
+for col in cols_numericas:
+    df[col] = pd.to_numeric(df[col], errors='coerce')
 
-# Filtro de bairros (antes das abas)
-bairros = df['bairro'].dropna().unique()
-bairro_sel = st.multiselect("Bairros:", bairros, default=bairros, key="filtros_bairros")
+df['incendio_consumo_agua'] = df['incendio_consumo_agua'].fillna(0)
+
+# Filtros como botão expansível no topo
+with st.expander("Filtros", expanded=False):
+    bairros = df['bairro'].dropna().unique()
+    bairro_sel = st.multiselect("Bairro:", bairros, default=bairros)
 df_filtrado = df[df['bairro'].isin(bairro_sel)]
+
+st.title("S.O.R.O. - Sistema Organizacional para Registros de Ocorrencias")
+
+c1, c2, c3, c4 = st.columns(4)
+c1.metric("Total de Ocorrências", len(df_filtrado))
+c2.metric("Vítimas Registradas", int(df_filtrado["qtd_total_vitimas"].sum()))
+c3.metric("Tempo Médio Resposta", f"{df_filtrado['tempo_resposta'].mean():.1f} min")
+c4.metric("Consumo Água (Incêndio)", f"{df_filtrado['incendio_consumo_agua'].sum():,.0f} L")
+
+st.divider()
 
 aba1, aba2, aba3, aba4 = st.tabs(["Visão Geral", "Incêndios", "Data Science & ML", "Salvamento & Praias"])
 
@@ -118,39 +76,29 @@ st.markdown(
 )
 
 with aba1:
-    g1, g2 = st.columns(2)
-    with g1:
-        st.markdown('<div class="card-graph">', unsafe_allow_html=True)
+    colA, colB = st.columns(2)
+    with colA:
         st.subheader("Distribuição por Tipo (Rosquinha)")
         fig_pie = px.pie(df_filtrado, names="tipo_ocorrencia", hole=0.4, title="Frequência Relativa dos Casos",
-                color_discrete_sequence=azul_palette, template="plotly_white")
+            color_discrete_sequence=azul_palette, template="plotly_white")
         st.plotly_chart(fig_pie, use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
-    with g2:
-        st.markdown('<div class="card-graph">', unsafe_allow_html=True)
+    with colB:
         st.subheader("Mapa de Calor (Distribuição Espacial)")
         st.map(df_filtrado, latitude="latitude", longitude="longitude")
-        st.markdown('</div>', unsafe_allow_html=True)
 
-    g3, g4 = st.columns(2)
-    with g3:
-        st.markdown('<div class="card-graph">', unsafe_allow_html=True)
-        st.subheader("Comparação de Distribuição (Boxplot)")
-        st.markdown("Comparativo da variação do **Tempo de Resposta** entre os diferentes tipos de ocorrência.")
-        fig_box = px.box(df_filtrado, x="tipo_ocorrencia", y="tempo_resposta", 
-                         color="tipo_ocorrencia", points="all",
-                         title="Distribuição de Tempo por Tipo",
-                         color_discrete_sequence=azul_palette, template="plotly_white")
-        st.plotly_chart(fig_box, use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
-    with g4:
-        st.markdown('<div class="card-graph">', unsafe_allow_html=True)
-        st.subheader("Distribuição Temporal (Gráfico de Linha)")
-        df_tempo = df_filtrado.groupby(df_filtrado["data_hora"].dt.date).size().reset_index(name="Qtd")
-        fig_linha = px.line(df_tempo, x="data_hora", y="Qtd", markers=True, title="Evolução Temporal dos Casos",
-                            color_discrete_sequence=azul_palette, template="plotly_white")
-        st.plotly_chart(fig_linha, use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+    st.subheader("Comparação de Distribuição (Boxplot)")
+    st.markdown("Comparativo da variação do **Tempo de Resposta** entre os diferentes tipos de ocorrência.")
+    fig_box = px.box(df_filtrado, x="tipo_ocorrencia", y="tempo_resposta", 
+                     color="tipo_ocorrencia", points="all",
+                     title="Distribuição de Tempo por Tipo",
+                     color_discrete_sequence=azul_palette, template="plotly_white")
+    st.plotly_chart(fig_box, use_container_width=True)
+    
+    st.subheader("Distribuição Temporal (Gráfico de Linha)")
+    df_tempo = df_filtrado.groupby(df_filtrado["data_hora"].dt.date).size().reset_index(name="Qtd")
+    fig_linha = px.line(df_tempo, x="data_hora", y="Qtd", markers=True, title="Evolução Temporal dos Casos",
+                        color_discrete_sequence=azul_palette, template="plotly_white")
+    st.plotly_chart(fig_linha, use_container_width=True)
 
 with aba2:
     st.markdown("### Análise Específica de Incêndios")
