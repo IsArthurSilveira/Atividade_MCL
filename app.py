@@ -80,7 +80,7 @@ with aba1:
     with colA:
         st.subheader("Distribuição por Tipo (Rosquinha)")
         fig_pie = px.pie(df_filtrado, names="tipo_ocorrencia", hole=0.4, title="Frequência Relativa dos Casos",
-                color_discrete_sequence=azul_palette)
+            color_discrete_sequence=azul_palette, template="plotly_white")
         st.plotly_chart(fig_pie, use_container_width=True)
     with colB:
         st.subheader("Mapa de Calor (Distribuição Espacial)")
@@ -91,13 +91,13 @@ with aba1:
     fig_box = px.box(df_filtrado, x="tipo_ocorrencia", y="tempo_resposta", 
                      color="tipo_ocorrencia", points="all",
                      title="Distribuição de Tempo por Tipo",
-                     color_discrete_sequence=azul_palette)
+                     color_discrete_sequence=azul_palette, template="plotly_white")
     st.plotly_chart(fig_box, use_container_width=True)
     
     st.subheader("Distribuição Temporal (Gráfico de Linha)")
     df_tempo = df_filtrado.groupby(df_filtrado["data_hora"].dt.date).size().reset_index(name="Qtd")
     fig_linha = px.line(df_tempo, x="data_hora", y="Qtd", markers=True, title="Evolução Temporal dos Casos",
-                        color_discrete_sequence=azul_palette)
+                        color_discrete_sequence=azul_palette, template="plotly_white")
     st.plotly_chart(fig_linha, use_container_width=True)
 
 with aba2:
@@ -112,12 +112,12 @@ with aba2:
             causas = df_fogo["subtipo_ocorrencia"].value_counts().reset_index()
             causas.columns = ["Causa", "Quantidade"]
             fig_causa = px.bar(causas, x="Causa", y="Quantidade", title="Ranking de Causas", color="Quantidade",
-                              color_continuous_scale=azul_palette)
+                              color_continuous_scale=azul_palette, template="plotly_white")
             st.plotly_chart(fig_causa, use_container_width=True)
         with c6:
             saz = df_fogo.groupby(df_fogo["data_hora"].dt.month_name()).size().reset_index(name="Qtd")
             fig_mes = px.bar(saz, x="data_hora", y="Qtd", title="Sazonalidade (Mês)",
-                            color_discrete_sequence=azul_palette)
+                            color_discrete_sequence=azul_palette, template="plotly_white")
             st.plotly_chart(fig_mes, use_container_width=True)
         
         st.info("Sistema de Recomendação Ativo")
@@ -149,7 +149,7 @@ with aba3:
                                      color="Cluster", size_max=15,
                                      title="Grupos de Ocorrências (Clusters)",
                                      labels={"tempo_resposta": "Tempo (min)", "incendio_consumo_agua": "Água (L)"},
-                                     color_discrete_sequence=azul_palette)
+                                     color_discrete_sequence=azul_palette, template="plotly_white")
             st.plotly_chart(fig_cluster, use_container_width=True)
         else:
             st.warning("Dados insuficientes para Clusterização.")
@@ -164,7 +164,7 @@ with aba3:
                                  trendline="ols",
                                  title="Regressão: Tempo x Consumo de Água",
                                  color="tipo_ocorrencia",
-                                 color_discrete_sequence=azul_palette)
+                                 color_discrete_sequence=azul_palette, template="plotly_white")
             st.plotly_chart(fig_reg, use_container_width=True)
         else:
             st.warning("Sem dados de consumo de água para regressão.")
@@ -197,7 +197,7 @@ with aba3:
             
             imp = pd.DataFrame({"Fator": ["Bairro", "Tipo de Incêndio", "Tempo de Resposta"], "Peso": modelo.feature_importances_})
             fig_imp = px.bar(imp, x="Peso", y="Fator", orientation='h', title="Fatores Determinantes nos Tipos de Caso",
-                             color_discrete_sequence=azul_palette)
+                             color_discrete_sequence=azul_palette, template="plotly_white")
             st.plotly_chart(fig_imp, use_container_width=True)
 
 with aba4:
@@ -211,7 +211,7 @@ with aba4:
         with col_p1:
             st.subheader("Perfil de Risco (Gênero)")
             fig_gen = px.pie(df_praia, names='genero', title="Vítimas por Gênero", 
-                             color='genero', color_discrete_sequence=azul_palette)
+                             color='genero', color_discrete_sequence=azul_palette, template="plotly_white")
             st.plotly_chart(fig_gen, use_container_width=True)
             
         with col_p2:
@@ -219,7 +219,7 @@ with aba4:
             dados_praia = df_praia['subtipo_ocorrencia'].value_counts().reset_index()
             dados_praia.columns = ['Tipo', 'Qtd']
             fig_bar_praia = px.bar(dados_praia, x='Qtd', y='Tipo', orientation='h', title="Ranking de Ocorrências",
-                                   color_discrete_sequence=azul_palette)
+                                   color_discrete_sequence=azul_palette, template="plotly_white")
             st.plotly_chart(fig_bar_praia, use_container_width=True)
         
         qtd_tubarao = df_praia['subtipo_ocorrencia'].str.contains("Tubarão", case=False).sum()
