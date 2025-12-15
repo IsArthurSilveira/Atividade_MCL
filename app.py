@@ -6,7 +6,7 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import LabelEncoder
 
 # Carregamento dos dados
-df = pd.read_csv("ocorrencias.csv")
+df = pd.read_csv("dados_soro.csv")
 
 st.set_page_config(
     page_title="S.O.R.O. - Sistema Organizacional para Registros de Ocorrencias",
