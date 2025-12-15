@@ -20,18 +20,6 @@ Desenvolvido por alunos da turma de TADS 044:<br>
 <b>Arthur Silveira, Maíra Lourenço, Manoel Olímpio, Matheus Willian, Victor Gomes e Victoria Zambom</b>
 </div>
 """, unsafe_allow_html=True)
-import streamlit as st
-import pandas as pd
-import plotly.express as px
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.cluster import KMeans
-from sklearn.preprocessing import LabelEncoder
-
-st.set_page_config(
-    page_title="S.O.R.O. - Sistema Organizacional para Registros de Ocorrencias",
-    page_icon=None,
-    layout="wide"
-)
 
 @st.cache_data
 def load_data():
