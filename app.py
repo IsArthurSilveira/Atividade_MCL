@@ -8,6 +8,7 @@ from sklearn.preprocessing import LabelEncoder
 # Carregamento dos dados
 df = pd.read_csv("dados_soro.csv")
 
+
 st.set_page_config(
     page_title="S.O.R.O. - Sistema Organizacional para Registros de Ocorrencias",
     page_icon=None,
@@ -81,6 +82,12 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+
+
+# Filtro de bairros (antes das abas)
+bairros = df['bairro'].dropna().unique()
+bairro_sel = st.multiselect("Bairros:", bairros, default=bairros, key="filtros_bairros")
+df_filtrado = df[df['bairro'].isin(bairro_sel)]
 
 aba1, aba2, aba3, aba4 = st.tabs(["Visão Geral", "Incêndios", "Data Science & ML", "Salvamento & Praias"])
 
