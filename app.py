@@ -8,7 +8,7 @@ from sklearn.preprocessing import LabelEncoder
 st.set_page_config(
     page_title="S.O.R.O. - Sistema Organizacional para Registros de Ocorrencias",
     page_icon=None,
-    layout="centered"
+    layout="wide"
 )
 
 @st.cache_data
