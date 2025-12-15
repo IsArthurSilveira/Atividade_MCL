@@ -31,10 +31,6 @@ for col in cols_numericas:
 
 df['incendio_consumo_agua'] = df['incendio_consumo_agua'].fillna(0)
 
-bairros = df['bairro'].dropna().unique()
-bairro_sel = st.sidebar.multiselect("Bairro:", bairros, default=bairros)
-df_filtrado = df[df['bairro'].isin(bairro_sel)]
-
 # Filtros como botão expansível no topo
 with st.expander("Filtros", expanded=False):
     bairros = df['bairro'].dropna().unique()
