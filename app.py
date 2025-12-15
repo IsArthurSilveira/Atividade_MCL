@@ -31,12 +31,14 @@ for col in cols_numericas:
 
 df['incendio_consumo_agua'] = df['incendio_consumo_agua'].fillna(0)
 
-st.sidebar.header("FILTROS OPERACIONAIS")
-st.sidebar.image("https://cdn-icons-png.flaticon.com/512/921/921079.png", width=80)
-
 bairros = df['bairro'].dropna().unique()
 bairro_sel = st.sidebar.multiselect("Bairro:", bairros, default=bairros)
+df_filtrado = df[df['bairro'].isin(bairro_sel)]
 
+# Filtros como botão expansível no topo
+with st.expander("Filtros", expanded=False):
+    bairros = df['bairro'].dropna().unique()
+    bairro_sel = st.multiselect("Bairro:", bairros, default=bairros)
 df_filtrado = df[df['bairro'].isin(bairro_sel)]
 
 st.title("S.O.R.O. - Sistema Organizacional para Registros de Ocorrencias")
@@ -51,8 +53,31 @@ st.divider()
 
 aba1, aba2, aba3, aba4 = st.tabs(["Visão Geral", "Incêndios", "Data Science & ML", "Salvamento & Praias"])
 
-# Paleta de tons de azul
+# Paleta de tons de azul (mas fundo branco)
 azul_palette = ["#0d47a1", "#1976d2", "#2196f3", "#64b5f6", "#bbdefb", "#1565c0", "#42a5f5", "#90caf9"]
+
+# Forçar fundo branco e layout simples
+st.markdown(
+    """
+    <style>
+    body, .stApp, .main, .block-container, .css-18e3th9, .css-1d391kg {
+        background-color: #fff !important;
+        color: #111 !important;
+    }
+    .stTabs [data-baseweb=\"tab\"] {
+        background: #fff !important;
+        color: #111 !important;
+    }
+    .stButton>button, .stMultiSelect, .stExpander {
+        background: #fff !important;
+        color: #111 !important;
+        border-radius: 6px;
+        border: 1px solid #e0e0e0;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 with aba1:
     colA, colB = st.columns(2)
