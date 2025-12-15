@@ -5,6 +5,9 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import LabelEncoder
 
+# Carregamento dos dados
+df = pd.read_csv("ocorrencias.csv")
+
 st.set_page_config(
     page_title="S.O.R.O. - Sistema Organizacional para Registros de Ocorrencias",
     page_icon=None,
