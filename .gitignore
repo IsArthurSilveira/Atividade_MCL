@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Streamlit
+.streamlit/
+
+# Dados e arquivos temporários
+*.csv~
+*.tmp
+*.log
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# VSCode
+.vscode/
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Ambiente virtual
+venv/
+.env/
+.envrc
+
+# Outros
+*.bak
+*.swp
+*.swo
